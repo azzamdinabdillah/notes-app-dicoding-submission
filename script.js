@@ -108,6 +108,7 @@ const notesData = [
 
 const notesWrapper = document.querySelector(".notes-wrapper");
 const form = document.querySelector("form");
+const errorMessageElement = document.querySelector('.error-message');
 const variants = ["white", "black", "blue", "yellow", "green", "orange", "red"];
 
 form.addEventListener("submit", (e) => e.preventDefault());
@@ -144,40 +145,46 @@ class InputCustom extends HTMLElement {
   constructor() {
     super();
     this.render();
+    this.realtimeValidation = this.realtimeValidation.bind(this);
   }
 
   realtimeValidation(e) {
-    console.log("bismillah");
+    const input = e.target;
+    const validState = input.validity;
+    const isValid = input.checkValidity();
+
+    if (!input.validationMessage == '') {
+      input.classList.add('invalid');
+    }else{
+      input.classList.remove('invalid');
+    }
+
+    if (!isValid) {
+      input.setCustomValidity(validState.tooShort ? 'Minimal Panjang 5 Karakter' : validState.valueMissing ? 'Title Harus Diisi' : '');
+      errorMessageElement.innerHTML = input.validationMessage
+    }
   }
 
   connectedCallback() {
-    this.render();
-
-    this.querySelector(".input-title").addEventListener(
-      "input",
-      this.realtimeValidation
-    );
-    this.querySelector(".input-title").addEventListener(
-      "invalid",
-      this.realtimeValidation
-    );
+    const input = this.querySelector(".input-title");
+    input.addEventListener("input", this.realtimeValidation);
+    input.addEventListener("invalid", this.realtimeValidation);
   }
 
   disconnectedCallback() {
-    this.querySelector(".input-title").removeEventListener(
-      "input",
-      this.realtimeValidation
-    );
-    this.querySelector(".input-title").removeEventListener(
-      "invalid",
-      this.realtimeValidation
-    );
+    const input = this.querySelector(".input-title");
+    input.removeEventListener("input", this.realtimeValidation);
+    input.removeEventListener("invalid", this.realtimeValidation);
   }
 
   render() {
-    this.innerHTML = `<input type="text" name="title" placeholder="Insert New Note" class="input-title" required min="5" />`;
+    this.innerHTML = `
+      <input type="text" name="title" placeholder="Insert New Note" class="input-title" required minlength="5" />
+    `;
   }
 }
+
+
 
 class ButtonCustom extends HTMLElement {
   constructor() {
@@ -187,7 +194,7 @@ class ButtonCustom extends HTMLElement {
 
   handleClick() {
     notesWrapper.insertAdjacentHTML(
-      "beforeend",
+      "afterbegin",
       `<note-item title="${form.title.value}" body="${form.body.value}"></note-item>`
     );
   }

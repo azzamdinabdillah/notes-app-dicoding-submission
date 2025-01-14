@@ -28,12 +28,25 @@ input-custom{
   width: 100%;
 }
 
+.input-title.invalid{
+  border: 2px solid red;
+}
+
 input::placeholder, textarea::placeholder {
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
   color: #959fa3;
+}
+
+.error-message{
+  margin-top: 5px;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  color: red;
 }
 
 .container {
